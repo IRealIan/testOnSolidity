@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "./LogicData.sol";
 import "./ProxyData.sol";
 
-contract MyToken is ProxyData, LogicData {
+contract MySecondToken is ProxyData, LogicData {
 
 	/** Events **/
     event Transfer(address indexed from, address indexed to, uint indexed tokenId);
@@ -36,10 +36,10 @@ contract MyToken is ProxyData, LogicData {
 	}
 
 	function approve(address to, uint tokenId) external payable {
-		address tokenOwner = MyToken.ownerOf(tokenId);
+		address tokenOwner = MySecondToken.ownerOf(tokenId);
 		require(msg.sender == tokenOwner || isApprovedForAll(owner, msg.sender));
 		tokenApprovals[tokenId] = to;
-		emit Approval(MyToken.ownerOf(tokenId), to, tokenId);
+		emit Approval(MySecondToken.ownerOf(tokenId), to, tokenId);
 	}
 
 	function setApprovalForAll(address operator, bool approved) external {

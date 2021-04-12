@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+import "./ProxyData.sol";
 
 /**
     Proxy : this is the main contract calling an implementation of a proxy (calling the main contract).
@@ -7,23 +8,20 @@ pragma solidity ^0.8.0;
     In order to avoid storage collisions, MyToken extends ImplData : a special contract made for state variable declarations 
     Proxy --> ProxyImpl --> MyToken (extends ImplData)
  */
-contract Proxy {
-	address proxyImplementation;
-	address owner = msg.sender;
-
+contract Proxy is ProxyData {
 	// Upgrade logic contract
-    function upgradeProxyContract(address newContractAddress) public {
+    function upgradeContract(address newContractAddress) public {
         require(msg.sender == owner);
-        proxyImplementation = newContractAddress;
+        contractImplementation = newContractAddress;
     }
 
 	// Get current implementation address
-	function implementationProxyAddress() public view returns(address impl) {
-		impl = proxyImplementation;
+	function getContractAddress() public view returns(address impl) {
+		impl = contractImplementation;
 	}
 
     fallback() external payable {
-        address proxyImpl = proxyImplementation;
+        address proxyImpl = contractImplementation;
         assembly {
             let _target := proxyImpl // sload(0)
             calldatacopy(0x0, 0x0, calldatasize())
