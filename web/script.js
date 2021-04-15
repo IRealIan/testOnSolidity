@@ -31,7 +31,7 @@ transfert_token_result
 
 const contractAddress = "0xb447fEB06Ce5A9988C74875C6992D7653b32E37a";
 let LogicContract;
-let accountAddress = ethereum.selectedAddress;
+let accountAddress;
 
 /** 
  * Async Contract functions (promises)
@@ -67,6 +67,11 @@ function contract_call_signed(method, tag = false, from, ...params) {
 function getSuppliedTokens() {
     $(this).addClass("loading");
     contract_call('totalSupply', 'supplied_tokens').then(() => $(this).removeClass("loading"));
+}
+
+function getMyBalance() {
+    $(this).addClass("loading");
+    contract_call('balanceOf', 'user_tokens_amount', accountAddress).then(() => $(this).removeClass("loading"));
 }
 
 function mintToken() {
@@ -169,8 +174,9 @@ function getOwnerOfToken() {
 }
 
 $(document).ready(function () {
-    // Connect to Rinkeby network
-
+    // Initialize state
+    accountAddress = ethereum.selectedAddress;
+    
     // Initialize forms
     transfertTokenForm();
     getUserBalance();
@@ -178,8 +184,35 @@ $(document).ready(function () {
 
     // Button listeners
     $("#supplied_tokens_btn").click(getSuppliedTokens);
+    $("#mint_token_btn").click(mintToken);
+    $("#user_tokens_btn").click(getMyBalance);
+
+    // MetaMask
+    handleMetaMask();
+});
+
+function handleMetaMask() {
+    // window.addEventListener('load', async () => {
+        // Modern dapp browsers...
+        if (window.ethereum) {
+            window.Web3 = new Web3(ethereum);
+            console.log('meec');
+            startWeb3Services();
+        } else if (window.Web3) {
+            window.Web3 = new Web3(new Web3.providers.WebsocketProvider("wss://rinkeby.infura.io/ws/v3/d8528137024e473d9a4a45b8028c5a82"));
+            startWeb3Services();
+        }
+        else {
+            console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+            return;
+        }
+    // });
+}
+
+async function startWeb3Services() {
     const loginBtn = $("#enableEthereumButton");
     if(!accountAddress) {
+        console.log('Nope : ', accountAddress);
         $('#displayMessage').show();
         $('button').prop("disabled",true);
         loginBtn.prop("disabled",false);
@@ -189,40 +222,17 @@ $(document).ready(function () {
             accountAddress = accounts[0];
             $('#displayMessage').hide();
             $('button').prop("disabled",false);
+            loginBtn.removeClass("orange");
             loginBtn.addClass("green");
             loginBtn.html('<i class="icon check circle"></i> Connected to MetaMask');
+            contract_call('balanceOf', 'user_tokens_amount', accountAddress);
         });
     } else {
+        contract_call('balanceOf', 'user_tokens_amount', accountAddress);
         loginBtn.addClass("green");
         loginBtn.html('<i class="icon check circle"></i> Connected to MetaMask');
     }
-    $("#mint_token_btn").click(mintToken);
 
-    // MetaMask
-    handleMetaMask();
-});
-
-function handleMetaMask() {
-    window.addEventListener('load', async () => {
-        // Modern dapp browsers...
-        if (window.ethereum) {
-            window.Web3 = new Web3(ethereum);
-        } else if (window.Web3) {
-            window.Web3 = new Web3(new Web3.providers.WebsocketProvider("wss://rinkeby.infura.io/ws/v3/d8528137024e473d9a4a45b8028c5a82"));
-        }
-        else {
-            console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-            return;
-        }
-        try {
-            startWeb3Services();
-        } catch(error) {
-
-        }
-    });
-}
-
-async function startWeb3Services() {
     LogicContract = new Web3.eth.Contract(contract, contractAddress);
     LogicContract.methods.name().call().then(result => {
         console.log('Resultat : ', result);
@@ -230,7 +240,6 @@ async function startWeb3Services() {
 
     // Initialize data
     contract_call('totalSupply', 'supplied_tokens');
-    contract_call('balanceOf', 'user_tokens_amount', accountAddress);
     /*
     contract_call('owner', false).then(result => {
         if(result == accountAddress) $('#unminable_token_btn').hide()
