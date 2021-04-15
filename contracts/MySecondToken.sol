@@ -81,14 +81,28 @@ contract MySecondToken is ProxyData, LogicData {
 		owners[tokenId] = to;
 		tokensCount[from] -= 1;
 		tokensCount[to] += 1;
+		// Added to MySecondToken
+		previousOwners[tokenId] = from;
 		emit Transfer(from, to, tokenId);
 	}
+
     function ownerOf(uint tokenId) public view virtual returns (address) {
         address tokenOwner = owners[tokenId];
         require(tokenOwner != address(0), "ERC721: owner query for nonexistent token");
-        return tokenOwner;
+        return owners[tokenId];
     }
+
 	function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes memory _data) external returns(bytes4) {
 		
+	}
+
+	// Added function to MySecondToken
+	function previousOwner(uint tokenId) public view returns (address) {
+        address tokenPreviousOwner = previousOwners[tokenId];
+        require(tokenPreviousOwner != address(0), "ERC721: owner query for nonexistent token");
+        return tokenPreviousOwner;
+	}
+	function isOwner() public view returns (bool) {
+		return msg.sender == owner;
 	}
 }

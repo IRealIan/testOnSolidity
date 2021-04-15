@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+            <link rel="stylesheet" type="text/css" href="style.css"/>
+            <script
+              src="https://code.jquery.com/jquery-3.1.1.min.js"
+              integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+              crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+            <script language="javascript" type="text/javascript" src="contract.js"></script>
+            <script language="javascript" type="text/javascript" src="script.js"></script>
+        </head>
+        <body>
+            <h1 class="ui center aligned header" id="title">MyTokens</h1>
+            <h2 class="ui center aligned header">- Interact with your tokens -</h2>    
+            
+            <div class="ui one column grid container">
+                <div class="column">
+                    <div id="displayMessage" style="display:none">
+                        <div class="ui negative message">
+                            <div class="header">
+                              Please log in with MetaMask in order to access full features
+                            </div>
+                            <p>
+                                MyTokens works with RinkeBy testnet and MetaMask. You can install MetaMask wallet on Chrome, Firefox and Brave brower
+                            </p>
+                        </div>
+                    </div>
+                    <div class="ui divider"></div>
+                    <div class="ui segment">
+                        <h3>
+                            Number of supplied tokens : <span id="supplied_tokens">0</span>
+                            <button class="mini ui right floated button" id="supplied_tokens_btn"><i class="icon redo"></i>refresh</button>
+                            <button class="mini ui right floated button" id="enableEthereumButton"><i class="icon ethereum"></i>Connect to MetaMask</button>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui two column stackable grid container">
+                <div class="column">
+                    <div class="ui segment">
+                        <h3>
+                            Your balance
+                            <button class="mini ui right floated button" id="user_tokens_btn"><i class="icon redo"></i>refresh</button>
+                        </h3>
+                        You have <span id="user_tokens_amount"></span> tokens
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment"><h3>Transfert a token</h3>
+                        <form class="ui form success" id="transfert_token_form">
+                            <div id="transfert_token_result"></div>
+                            <div class="ui error message">
+                                <div class="header">Action Forbidden</div>
+                                <p>You can only sign up for an account once with a given e-mail address.</p>
+                            </div>
+                            <div class="field">
+                                <label>Token ID</label>
+                                <input 
+                                    id="transfert_token_token_id" 
+                                    type="text"
+                                />
+                            </div>
+                            <div class="field">
+                                <label>Receiver address</label>
+                                <input 
+                                    id="transfert_token_receiver_address" 
+                                    type="text"
+                                />
+                            </div>
+                            <div class="field">
+                                <button type="submit" class="ui submit button">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="column">
+                  <div class="ui segment"><h3>Balance of an address</h3>
+                    <form class="ui form" id="user_balance_form">
+                        <div class="field">
+                            <label>Address</label>
+                            <input 
+                                type="text"
+                                id="user_balance_address"
+                            />
+                        </div>
+                        <div class="field" id="user_balance_result"></div>
+                        <div class="field">
+                            <button type="submit" class="ui submit button">Submit</button>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="ui segment"><h3>Owner of a token</h3>
+                    <form class="ui form" id="token_owner_form">
+                        <div class="field">
+                            <label>Token ID</label>
+                            <input 
+                                type="text"
+                                id="token_owner_token_id"
+                            />
+                        </div>
+                        <div class="field" id="token_owner_result"></div>
+                        <div class="field">
+                            <button type="submit" class="ui submit button">Submit</button>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="ui segment"><h3>Forge a token</h3>
+                    <div id="mint_token_result"></div>
+                    <!-- <button class="red ui button disabled" id="unminable_token_btn">You are not the owner of the contract</button> -->
+                    <button class="ui submit button" id="mint_token_btn">Forge a new token</button>
+                  </div>
+                </div>
+                <!--
+                <div class="column">
+                  <div class="ui segment">
+                    <h3>
+                        Approve transactions
+                        <button class="mini ui right floated button" id="transactions_table_btn"><i class="icon redo"></i>refresh</button>
+                    </h3>
+                    <table class="ui celled table">
+                        <thead>
+                          <tr><th>From</th>
+                          <th>To</th>
+                          <th>Token ID</th>
+                          <th>Action</th>
+                        </tr></thead>
+                        <tbody id="transactions_table_content">
+                          <tr>
+                            <td data-label="Name">James</td>
+                            <td data-label="Age">24</td>
+                            <td data-label="Job">Engineer</td>
+                            <td>
+                                <button class="ui compact button"><i class="ban icon"></i></button>
+                                <button class="ui compact button"><i class="check icon"></i></button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td data-label="Name">Jill</td>
+                            <td data-label="Age">26</td>
+                            <td data-label="Job">Engineer</td>
+                            <td>
+                                <button class="ui compact button"><i class="ban icon"></i></button>
+                                <button class="ui compact button"><i class="check icon"></i></button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td data-label="Name">Elyse</td>
+                            <td data-label="Age">24</td>
+                            <td data-label="Job">Designer</td>
+                            <td>
+                                <button class="ui compact button"><i class="ban icon"></i></button>
+                                <button class="ui compact button"><i class="check icon"></i></button>
+                            </td>
+                          </tr>
+                        </tbody>
+                    </table>
+                  </div>
+                </div>
+                -->
+
+              </div>
+        </body>
+    </html>
+</DOCTYPE>

@@ -17,4 +17,8 @@ contract LogicData {
 	mapping (address => mapping (address => bool)) operatorApprovals;
 	// Mapping from token ID to approved address
 	mapping (uint => address) tokenApprovals;
+
+	/* Added for MySecondToken */
+	// Mapping token ID to previous owner 
+	mapping (uint => address) previousOwners;
 }
